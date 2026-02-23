@@ -8,9 +8,19 @@ export interface UptimeCheckResult {
   errorMessage?: string
 }
 
-export async function checkEndpoint(endpointId: string): Promise<UptimeCheckResult> {
+const MAX_CONCURRENT_CHECKS = 10
+
+export async function checkEndpoint(
+  endpointId: string,
+): Promise<UptimeCheckResult> {
   const endpoint = await prisma.aPIEndpoint.findUnique({
     where: { id: endpointId },
+    select: {
+      id: true,
+      endpointUrl: true,
+      apiKey: true,
+      threshold: true,
+    },
   })
 
   if (!endpoint) {
@@ -29,14 +39,13 @@ export async function checkEndpoint(endpointId: string): Promise<UptimeCheckResu
 
     const response = await fetch(endpoint.endpointUrl, {
       method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${endpoint.apiKey}`,
-      },
+      headers: endpoint.apiKey
+        ? { Authorization: `Bearer ${endpoint.apiKey}` }
+        : {},
       signal: controller.signal,
     })
 
     clearTimeout(timeoutId)
-
     responseTime = Date.now() - startTime
     status = response.status.toString()
     isUp = response.ok
@@ -47,42 +56,40 @@ export async function checkEndpoint(endpointId: string): Promise<UptimeCheckResu
     status = 'error'
   }
 
-  // Log uptime
-  await prisma.uptimeLog.create({
-    data: {
-      endpointId,
-      isUp,
-      responseTime,
-      status,
-      errorMessage,
-    },
-  })
+  await prisma.$transaction([
+    prisma.uptimeLog.create({
+      data: { endpointId, isUp, responseTime, status, errorMessage },
+    }),
+    prisma.aPIEndpoint.update({
+      where: { id: endpointId },
+      data: {
+        lastChecked: new Date(),
+        lastResponse: status,
+        lastStatus: isUp ? 'up' : 'down',
+      },
+    }),
+  ])
 
-  // Update endpoint status
-  await prisma.aPIEndpoint.update({
-    where: { id: endpointId },
-    data: {
-      lastChecked: new Date(),
-      lastResponse: status,
-      lastStatus: isUp ? 'up' : 'down',
-    },
-  })
-
-  return {
-    endpointId,
-    isUp,
-    responseTime,
-    status,
-    errorMessage,
-  }
+  return { endpointId, isUp, responseTime, status, errorMessage }
 }
 
-export async function checkAllEndpoints() {
-  const endpoints = await prisma.aPIEndpoint.findMany()
+export async function checkAllEndpoints(): Promise<UptimeCheckResult[]> {
+  const endpoints = await prisma.aPIEndpoint.findMany({
+    select: { id: true },
+  })
 
-  const results = await Promise.all(
-    endpoints.map((endpoint) => checkEndpoint(endpoint.id))
-  )
+  const results: UptimeCheckResult[] = []
+
+  for (let i = 0; i < endpoints.length; i += MAX_CONCURRENT_CHECKS) {
+    const batch = endpoints.slice(i, i + MAX_CONCURRENT_CHECKS)
+    const batchResults = await Promise.allSettled(
+      batch.map((ep) => checkEndpoint(ep.id)),
+    )
+
+    for (const r of batchResults) {
+      if (r.status === 'fulfilled') results.push(r.value)
+    }
+  }
 
   return results
 }

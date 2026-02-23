@@ -2,11 +2,21 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+})
 
 export const metadata: Metadata = {
-  title: 'API Sentinel - Dont Lose Money When Your APIs Go Down',
-  description: 'Real-time monitoring for Google Maps, Stripe, Razorpay, and any API you care about.',
+  title: 'API Sentinel — Real-Time API Monitoring',
+  description:
+    'Monitor your APIs in real time. Get instant alerts when Google Maps, Stripe, Razorpay, or any endpoint goes down.',
+  metadataBase: new URL('https://apisentinel.dev'),
+  openGraph: {
+    title: 'API Sentinel — Real-Time API Monitoring',
+    description: 'Monitor your APIs in real time. Get instant alerts before your users notice.',
+    type: 'website',
+  },
 }
 
 export default function RootLayout({
@@ -15,8 +25,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="en" className="dark">
+      <body
+        className={`${inter.variable} font-sans antialiased`}
+      >
+        {children}
+      </body>
     </html>
   )
 }

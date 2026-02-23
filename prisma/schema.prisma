@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  stripeCustomerId String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  endpoints     APIEndpoint[]
+}
+
+model APIEndpoint {
+  id             String    @id @default(uuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name           String
+  endpointUrl    String
+  methods        String[]  // ["GET", "POST", "GET"]
+  apiKey         String    @db.Text // User's API key (encrypted)
+  interval       Int       @default(60) // seconds
+  alertEmail     String
+  alertWebhook   String?
+  threshold      Int       @default(2000) // ms response time
+  lastChecked    DateTime?
+  lastResponse   String    @db.Text
+  lastStatus     String    // "up", "down", "degraded"
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  uptimeLogs     UptimeLog[]
+}
+
+model UptimeLog {
+  id             String    @id @default(uuid())
+  endpointId     String
+  endpoint       APIEndpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+  isUp           Boolean
+  responseTime   Int       // ms
+  status         String    // 200, 500, etc.
+  errorMessage   String?   @db.Text
+  checkedAt      DateTime  @default(now())
+}

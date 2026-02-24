@@ -5,11 +5,11 @@ import { ExternalLink, Clock, Globe } from 'lucide-react'
 import { GlassCard } from '@/components/ui/glass-card'
 import { StatusBadge } from '@/components/ui/status-badge'
 import { StatusDot } from '@/components/ui/status-dot'
-import { formatRelativeTime } from '@/lib/utils'
-import type { Endpoint } from '@/types'
+import { formatRelativeTime } from '@/utils/format'
+import type { IEndpoint } from '@/interfaces'
 
 interface EndpointCardProps {
-  endpoint: Endpoint
+  endpoint: IEndpoint
   index: number
 }
 

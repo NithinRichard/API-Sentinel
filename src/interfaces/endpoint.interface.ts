@@ -1,4 +1,6 @@
-export interface Endpoint {
+import type { EndpointStatusType } from '@/constants/status.constant'
+
+export interface IEndpoint {
   id: string
   name: string
   endpointUrl: string
@@ -7,14 +9,14 @@ export interface Endpoint {
   alertEmail: string
   alertWebhook: string | null
   threshold: number
-  lastChecked: string
-  lastResponse: string
-  lastStatus: 'up' | 'down' | 'degraded'
-  createdAt: string
-  updatedAt: string
+  lastChecked: string | Date | null
+  lastResponse: string | null
+  lastStatus: EndpointStatusType
+  createdAt: string | Date
+  updatedAt: string | Date
 }
 
-export interface EndpointStats {
+export interface IEndpointStats {
   total: number
   up: number
   down: number
@@ -23,12 +25,12 @@ export interface EndpointStats {
   avgResponseTime: number
 }
 
-export interface EndpointsResponse {
-  endpoints: Endpoint[]
-  stats: EndpointStats
+export interface IEndpointsResponse {
+  endpoints: IEndpoint[]
+  stats: IEndpointStats
 }
 
-export interface CreateEndpointPayload {
+export interface ICreateEndpointPayload {
   name: string
   endpointUrl: string
   apiKey?: string
@@ -38,12 +40,10 @@ export interface CreateEndpointPayload {
   methods?: string[]
 }
 
-export interface UptimeLog {
-  id: string
+export interface IUptimeCheckResult {
   endpointId: string
   isUp: boolean
   responseTime: number
   status: string
   errorMessage?: string
-  checkedAt: string
 }

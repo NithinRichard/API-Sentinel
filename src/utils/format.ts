@@ -1,10 +1,3 @@
-import { type ClassValue, clsx } from 'clsx'
-import { twMerge } from 'tailwind-merge'
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
-
 export function formatRelativeTime(date: string | Date): string {
   const now = new Date()
   const then = new Date(date)
@@ -17,9 +10,4 @@ export function formatRelativeTime(date: string | Date): string {
   if (diffMin < 60) return `${diffMin}m ago`
   if (diffHr < 24) return `${diffHr}h ago`
   return then.toLocaleDateString()
-}
-
-export function maskApiKey(key: string): string {
-  if (key.length <= 8) return '••••••••'
-  return key.slice(0, 4) + '••••' + key.slice(-4)
 }

@@ -1,10 +1,9 @@
-// Mock data for demo purposes
-
 export const mockEndpoints = [
   {
     id: '1',
     name: 'Google Maps Platform',
-    endpointUrl: 'https://maps.googleapis.com/maps/api/place/details/json?place_id=ChIJN1x30md4j4ARbn1eQdUN88U',
+    endpointUrl:
+      'https://maps.googleapis.com/maps/api/place/details/json?place_id=ChIJN1x30md4j4ARbn1eQdUN88U',
     methods: ['GET'],
     apiKey: 'sample-api-key',
     interval: 60,
@@ -13,7 +12,7 @@ export const mockEndpoints = [
     threshold: 2000,
     lastChecked: new Date().toISOString(),
     lastResponse: '200',
-    lastStatus: 'up',
+    lastStatus: 'up' as const,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -29,7 +28,7 @@ export const mockEndpoints = [
     threshold: 2000,
     lastChecked: new Date().toISOString(),
     lastResponse: '200',
-    lastStatus: 'up',
+    lastStatus: 'up' as const,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -45,7 +44,7 @@ export const mockEndpoints = [
     threshold: 2000,
     lastChecked: new Date().toISOString(),
     lastResponse: '200',
-    lastStatus: 'up',
+    lastStatus: 'up' as const,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },

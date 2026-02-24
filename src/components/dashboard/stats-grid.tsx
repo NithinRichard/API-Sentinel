@@ -11,10 +11,10 @@ import {
   TrendingUp,
 } from 'lucide-react'
 import { GlassCard } from '@/components/ui/glass-card'
-import type { EndpointStats } from '@/types'
+import type { IEndpointStats } from '@/interfaces'
 
 interface StatsGridProps {
-  stats: EndpointStats | null
+  stats: IEndpointStats | null
   loading?: boolean
 }
 

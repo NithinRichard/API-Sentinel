@@ -11,20 +11,14 @@ export const authConfig = {
       const isOnDashboard = nextUrl.pathname.startsWith('/dashboard')
       const isOnLogin = nextUrl.pathname === '/login'
 
-      if (isOnDashboard && !isLoggedIn) {
-        return false
-      }
-
+      if (isOnDashboard && !isLoggedIn) return false
       if (isOnLogin && isLoggedIn) {
         return Response.redirect(new URL('/dashboard', nextUrl))
       }
-
       return true
     },
     async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id
-      }
+      if (user) token.id = user.id
       return token
     },
     async session({ session, token }) {

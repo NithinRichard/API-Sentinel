@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, type HTMLMotionProps } from 'framer-motion'
-import { cn } from '@/lib/utils'
+import { cn } from '@/utils/cn'
 
 interface GlassCardProps extends HTMLMotionProps<'div'> {
   hover?: boolean

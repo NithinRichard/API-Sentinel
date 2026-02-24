@@ -23,7 +23,8 @@ export const createEndpointSchema = z.object({
       try {
         const parsed = new URL(url)
         return !BLOCKED_HOSTS.some(
-          (host) => parsed.hostname === host || parsed.hostname.startsWith(host)
+          (host) =>
+            parsed.hostname === host || parsed.hostname.startsWith(host),
         )
       } catch {
         return false
